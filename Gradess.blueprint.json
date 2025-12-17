@@ -1,0 +1,1447 @@
+{
+    "name": "Gradess",
+    "flow": [
+        {
+            "id": 9,
+            "module": "regexp:Parser",
+            "version": 1,
+            "parameters": {
+                "global": true,
+                "pattern": "^(?:(\\d{3})\\s*)?(.+)$",
+                "multiline": false,
+                "sensitive": true,
+                "singleline": false,
+                "continueWhenNoRes": false,
+                "ignoreInfiniteLoopsWhenGlobal": false
+            },
+            "mapper": {
+                "text": "{{var.input.User_question}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -3,
+                    "y": 140
+                },
+                "restore": {},
+                "parameters": [
+                    {
+                        "name": "pattern",
+                        "type": "text",
+                        "label": "Pattern",
+                        "required": true
+                    },
+                    {
+                        "name": "global",
+                        "type": "boolean",
+                        "label": "Global match",
+                        "required": true
+                    },
+                    {
+                        "name": "sensitive",
+                        "type": "boolean",
+                        "label": "Case sensitive",
+                        "required": true
+                    },
+                    {
+                        "name": "multiline",
+                        "type": "boolean",
+                        "label": "Multiline",
+                        "required": true
+                    },
+                    {
+                        "name": "singleline",
+                        "type": "boolean",
+                        "label": "Singleline",
+                        "required": true
+                    },
+                    {
+                        "name": "continueWhenNoRes",
+                        "type": "boolean",
+                        "label": "Continue the execution of the route even if the module finds no matches",
+                        "required": true
+                    },
+                    {
+                        "name": "ignoreInfiniteLoopsWhenGlobal",
+                        "type": "boolean",
+                        "label": "Ignore errors when there is an infinite search loop",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "text",
+                        "type": "text",
+                        "label": "Text"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "$1",
+                        "type": "text",
+                        "label": "$1"
+                    },
+                    {
+                        "name": "$2",
+                        "type": "text",
+                        "label": "$2"
+                    },
+                    {
+                        "name": "i",
+                        "type": "uinteger",
+                        "label": "i"
+                    },
+                    {
+                        "name": "__IMTMATCH__",
+                        "type": "any",
+                        "label": "Fallback Match"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "module": "google-drive:searchForFilesFolders",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": xxxxx
+            },
+            "mapper": {
+                "limit": "1",
+                "query": "{{var.input.Student_ID}}",
+                "select": "list",
+                "folderId": null,
+                "retrieve": "folder",
+                "searchType": "fulltext",
+                "destination": "drive"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 150
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "Select from the list"
+                        },
+                        "folderId": {
+                            "mode": "chose",
+                            "path": []
+                        },
+                        "retrieve": {
+                            "label": "Folders"
+                        },
+                        "searchType": {
+                            "label": "Fulltext search"
+                        },
+                        "destination": {
+                            "label": "My Drive"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-restricted"
+                            },
+                            "label": "My Google Drive (xxxxx@xxxxxx)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-restricted",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "type": "hidden"
+                    },
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Select the Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "map",
+                                "list"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "retrieve",
+                        "type": "select",
+                        "label": "Retrieve",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "file",
+                                "folder",
+                                "file_folder"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "searchType",
+                        "type": "select",
+                        "label": "Search",
+                        "validate": {
+                            "enum": [
+                                "title",
+                                "fulltext",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    },
+                    {
+                        "name": "destination",
+                        "type": "select",
+                        "label": "Choose a Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folderId",
+                        "type": "folder",
+                        "label": "Choose a Folder"
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 6,
+            "module": "google-drive:searchForFilesFolders",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": xxxxx
+            },
+            "mapper": {
+                "limit": "10",
+                "query": "grades",
+                "select": "list",
+                "folderId": "/{{5.id}}",
+                "operator": "contains",
+                "retrieve": "file",
+                "searchType": "title",
+                "destination": "drive"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 150
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "Select from the list"
+                        },
+                        "folderId": {
+                            "mode": "edit",
+                            "path": []
+                        },
+                        "operator": {
+                            "label": "Search for name containing the search term"
+                        },
+                        "retrieve": {
+                            "label": "Files"
+                        },
+                        "searchType": {
+                            "label": "Search within file/folder names"
+                        },
+                        "destination": {
+                            "label": "My Drive"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-restricted"
+                            },
+                            "label": "My Google Drive (xxxxx@xxxxxx)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-restricted",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "type": "hidden"
+                    },
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Select the Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "map",
+                                "list"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "retrieve",
+                        "type": "select",
+                        "label": "Retrieve",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "file",
+                                "folder",
+                                "file_folder"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "searchType",
+                        "type": "select",
+                        "label": "Search",
+                        "validate": {
+                            "enum": [
+                                "title",
+                                "fulltext",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    },
+                    {
+                        "name": "destination",
+                        "type": "select",
+                        "label": "Choose a Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folderId",
+                        "type": "folder",
+                        "label": "Choose a Folder"
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    },
+                    {
+                        "name": "operator",
+                        "type": "select",
+                        "label": "Search options",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "=",
+                                "contains"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": 16,
+            "module": "builtin:BasicRouter",
+            "version": 1,
+            "parameters": {
+                "else": 1
+            },
+            "mapper": null,
+            "metadata": {
+                "designer": {
+                    "x": 900,
+                    "y": 150
+                }
+            },
+            "routes": [
+                {
+                    "flow": [
+                        {
+                            "id": 7,
+                            "module": "google-sheets:filterRows",
+                            "version": 2,
+                            "parameters": {
+                                "__IMTCONN__": xxxxxx
+                            },
+                            "filter": {
+                                "name": "含學年",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{9.`$1`}}",
+                                            "o": "exist"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "from": "drive",
+                                "filter": [
+                                    [
+                                        {
+                                            "a": "A",
+                                            "b": "{{9.`$1`}}",
+                                            "o": "text:equal"
+                                        },
+                                        {
+                                            "a": "C",
+                                            "b": "{{9.`$2`}}",
+                                            "o": "text:contain:ci"
+                                        }
+                                    ]
+                                ],
+                                "sheetId": "{{6.name}}",
+                                "sortOrder": "asc",
+                                "spreadsheetId": "{{6.id}}",
+                                "tableFirstRow": "A1:Z1",
+                                "includesHeaders": true,
+                                "valueRenderOption": "FORMATTED_VALUE",
+                                "dateTimeRenderOption": "FORMATTED_STRING"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1200,
+                                    "y": 0
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "from": {
+                                            "label": "Select from My Drive"
+                                        },
+                                        "orderBy": {
+                                            "mode": "chose"
+                                        },
+                                        "sortOrder": {
+                                            "mode": "chose",
+                                            "label": "Ascending"
+                                        },
+                                        "spreadsheetId": {
+                                            "mode": "edit"
+                                        },
+                                        "tableFirstRow": {
+                                            "label": "A-Z"
+                                        },
+                                        "includesHeaders": {
+                                            "mode": "chose",
+                                            "label": "Yes"
+                                        },
+                                        "valueRenderOption": {
+                                            "mode": "chose",
+                                            "label": "Formatted value"
+                                        },
+                                        "dateTimeRenderOption": {
+                                            "mode": "chose",
+                                            "label": "Formatted string"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google"
+                                            },
+                                            "label": "Google connection (xxxxxx@xxxxxx)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "from",
+                                        "type": "select",
+                                        "label": "Search Method",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "drive",
+                                                "share"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "valueRenderOption",
+                                        "type": "select",
+                                        "label": "Value render option",
+                                        "validate": {
+                                            "enum": [
+                                                "FORMATTED_VALUE",
+                                                "UNFORMATTED_VALUE",
+                                                "FORMULA"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "dateTimeRenderOption",
+                                        "type": "select",
+                                        "label": "Date and time render option",
+                                        "validate": {
+                                            "enum": [
+                                                "SERIAL_NUMBER",
+                                                "FORMATTED_STRING"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "limit",
+                                        "type": "uinteger",
+                                        "label": "Limit"
+                                    },
+                                    {
+                                        "name": "spreadsheetId",
+                                        "type": "select",
+                                        "label": "Spreadsheet ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "sheetId",
+                                        "type": "any",
+                                        "label": "Sheet Name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "includesHeaders",
+                                        "type": "select",
+                                        "label": "Table contains headers",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                true,
+                                                false
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "tableFirstRow",
+                                        "type": "select",
+                                        "label": "Column range",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "A1:Z1",
+                                                "A1:BZ1",
+                                                "A1:CZ1",
+                                                "A1:DZ1",
+                                                "A1:MZ1",
+                                                "A1:ZZ1",
+                                                "A1:AZZ1",
+                                                "A1:BZZ1",
+                                                "A1:CZZ1",
+                                                "A1:DZZ1",
+                                                "A1:MZZ1",
+                                                "A1:ZZZ1"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "filter",
+                                        "type": "filter",
+                                        "label": "Filter",
+                                        "options": "rpc://google-sheets/2/rpcGetFilterKeys?includesHeaders=true"
+                                    },
+                                    {
+                                        "name": "orderBy",
+                                        "type": "select",
+                                        "label": "Order by"
+                                    },
+                                    {
+                                        "name": "sortOrder",
+                                        "type": "select",
+                                        "label": "Sort order",
+                                        "validate": {
+                                            "enum": [
+                                                "asc",
+                                                "desc"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "__IMTLENGTH__",
+                                        "type": "uinteger",
+                                        "label": "Total number of bundles"
+                                    },
+                                    {
+                                        "name": "__IMTINDEX__",
+                                        "type": "uinteger",
+                                        "label": "Bundle order position"
+                                    },
+                                    {
+                                        "name": "__ROW_NUMBER__",
+                                        "type": "number",
+                                        "label": "Row number"
+                                    },
+                                    {
+                                        "name": "__SPREADSHEET_ID__",
+                                        "type": "text",
+                                        "label": "Spreadsheet ID"
+                                    },
+                                    {
+                                        "name": "__SHEET__",
+                                        "type": "text",
+                                        "label": "Sheet"
+                                    },
+                                    {
+                                        "name": "0",
+                                        "type": "text",
+                                        "label": "學年 (A)"
+                                    },
+                                    {
+                                        "name": "1",
+                                        "type": "text",
+                                        "label": "選別 (B)"
+                                    },
+                                    {
+                                        "name": "2",
+                                        "type": "text",
+                                        "label": "科目 (C)"
+                                    },
+                                    {
+                                        "name": "3",
+                                        "type": "text",
+                                        "label": "上學期_學分 (D)"
+                                    },
+                                    {
+                                        "name": "4",
+                                        "type": "text",
+                                        "label": "上學期_成績 (E)"
+                                    },
+                                    {
+                                        "name": "5",
+                                        "type": "text",
+                                        "label": "下學期_學分 (F)"
+                                    },
+                                    {
+                                        "name": "6",
+                                        "type": "text",
+                                        "label": "下學期_成績 (G)"
+                                    },
+                                    {
+                                        "name": "7",
+                                        "type": "text",
+                                        "label": "(H)"
+                                    },
+                                    {
+                                        "name": "8",
+                                        "type": "text",
+                                        "label": "(I)"
+                                    },
+                                    {
+                                        "name": "9",
+                                        "type": "text",
+                                        "label": "(J)"
+                                    },
+                                    {
+                                        "name": "10",
+                                        "type": "text",
+                                        "label": "(K)"
+                                    },
+                                    {
+                                        "name": "11",
+                                        "type": "text",
+                                        "label": "(L)"
+                                    },
+                                    {
+                                        "name": "12",
+                                        "type": "text",
+                                        "label": "(M)"
+                                    },
+                                    {
+                                        "name": "13",
+                                        "type": "text",
+                                        "label": "(N)"
+                                    },
+                                    {
+                                        "name": "14",
+                                        "type": "text",
+                                        "label": "(O)"
+                                    },
+                                    {
+                                        "name": "15",
+                                        "type": "text",
+                                        "label": "(P)"
+                                    },
+                                    {
+                                        "name": "16",
+                                        "type": "text",
+                                        "label": "(Q)"
+                                    },
+                                    {
+                                        "name": "17",
+                                        "type": "text",
+                                        "label": "(R)"
+                                    },
+                                    {
+                                        "name": "18",
+                                        "type": "text",
+                                        "label": "(S)"
+                                    },
+                                    {
+                                        "name": "19",
+                                        "type": "text",
+                                        "label": "(T)"
+                                    },
+                                    {
+                                        "name": "20",
+                                        "type": "text",
+                                        "label": "(U)"
+                                    },
+                                    {
+                                        "name": "21",
+                                        "type": "text",
+                                        "label": "(V)"
+                                    },
+                                    {
+                                        "name": "22",
+                                        "type": "text",
+                                        "label": "(W)"
+                                    },
+                                    {
+                                        "name": "23",
+                                        "type": "text",
+                                        "label": "(X)"
+                                    },
+                                    {
+                                        "name": "24",
+                                        "type": "text",
+                                        "label": "(Y)"
+                                    },
+                                    {
+                                        "name": "25",
+                                        "type": "text",
+                                        "label": "(Z)"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 10,
+                            "module": "util:SetVariable2",
+                            "version": 1,
+                            "parameters": {},
+                            "mapper": {
+                                "name": "first_semester_grade",
+                                "scope": "roundtrip",
+                                "value": "{{ifempty(7.`4`; \"未修（無成績）\"; 7.`4`)}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1500,
+                                    "y": 0
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "scope": {
+                                            "label": "One cycle"
+                                        }
+                                    }
+                                },
+                                "expect": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Variable name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "scope",
+                                        "type": "select",
+                                        "label": "Variable lifetime",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "roundtrip",
+                                                "execution"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "value",
+                                        "type": "any",
+                                        "label": "Variable value"
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "first_semester_grade",
+                                        "type": "any",
+                                        "label": "first_semester_grade"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 11,
+                            "module": "util:SetVariable2",
+                            "version": 1,
+                            "parameters": {},
+                            "mapper": {
+                                "name": "second_semester_grade",
+                                "scope": "roundtrip",
+                                "value": "{{ifempty(7.`6`; \"未修（無成績）\"; 7.`6`)}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1800,
+                                    "y": 0
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "scope": {
+                                            "label": "One cycle"
+                                        }
+                                    }
+                                },
+                                "expect": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Variable name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "scope",
+                                        "type": "select",
+                                        "label": "Variable lifetime",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "roundtrip",
+                                                "execution"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "value",
+                                        "type": "any",
+                                        "label": "Variable value"
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "second_semester_grade",
+                                        "type": "any",
+                                        "label": "second_semester_grade"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 13,
+                            "module": "scenario-service:ReturnData",
+                            "version": 2,
+                            "parameters": {},
+                            "mapper": {
+                                "Res": "學年:{{7.`0`}}\n科目:{{7.`2`}}\n上學期成績:{{10.first_semester_grade}}\n下學期成績：{{11.second_semester_grade}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 2100,
+                                    "y": 0
+                                },
+                                "restore": {},
+                                "expect": [
+                                    {
+                                        "name": "Res",
+                                        "type": "text",
+                                        "label": ""
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 15,
+                            "module": "google-sheets:filterRows",
+                            "version": 2,
+                            "parameters": {
+                                "__IMTCONN__": xxxxxxx
+                            },
+                            "filter": {
+                                "name": "只有科目",
+                                "conditions": []
+                            },
+                            "mapper": {
+                                "from": "drive",
+                                "filter": [
+                                    [
+                                        {
+                                            "a": "C",
+                                            "b": "{{9.`$2`}}",
+                                            "o": "text:contain:ci"
+                                        }
+                                    ]
+                                ],
+                                "sheetId": "{{6.name}}",
+                                "sortOrder": "asc",
+                                "spreadsheetId": "{{6.id}}",
+                                "tableFirstRow": "A1:Z1",
+                                "includesHeaders": true,
+                                "valueRenderOption": "FORMATTED_VALUE",
+                                "dateTimeRenderOption": "FORMATTED_STRING"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1200,
+                                    "y": 300
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "from": {
+                                            "label": "Select from My Drive"
+                                        },
+                                        "orderBy": {
+                                            "mode": "chose"
+                                        },
+                                        "sortOrder": {
+                                            "mode": "chose",
+                                            "label": "Ascending"
+                                        },
+                                        "spreadsheetId": {
+                                            "mode": "edit"
+                                        },
+                                        "tableFirstRow": {
+                                            "label": "A-Z"
+                                        },
+                                        "includesHeaders": {
+                                            "mode": "chose",
+                                            "label": "Yes"
+                                        },
+                                        "valueRenderOption": {
+                                            "mode": "chose",
+                                            "label": "Formatted value"
+                                        },
+                                        "dateTimeRenderOption": {
+                                            "mode": "chose",
+                                            "label": "Formatted string"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google"
+                                            },
+                                            "label": "Google connection (xxxxxx@xxxxx)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "from",
+                                        "type": "select",
+                                        "label": "Search Method",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "drive",
+                                                "share"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "valueRenderOption",
+                                        "type": "select",
+                                        "label": "Value render option",
+                                        "validate": {
+                                            "enum": [
+                                                "FORMATTED_VALUE",
+                                                "UNFORMATTED_VALUE",
+                                                "FORMULA"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "dateTimeRenderOption",
+                                        "type": "select",
+                                        "label": "Date and time render option",
+                                        "validate": {
+                                            "enum": [
+                                                "SERIAL_NUMBER",
+                                                "FORMATTED_STRING"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "limit",
+                                        "type": "uinteger",
+                                        "label": "Limit"
+                                    },
+                                    {
+                                        "name": "spreadsheetId",
+                                        "type": "select",
+                                        "label": "Spreadsheet ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "sheetId",
+                                        "type": "any",
+                                        "label": "Sheet Name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "includesHeaders",
+                                        "type": "select",
+                                        "label": "Table contains headers",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                true,
+                                                false
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "tableFirstRow",
+                                        "type": "select",
+                                        "label": "Column range",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "A1:Z1",
+                                                "A1:BZ1",
+                                                "A1:CZ1",
+                                                "A1:DZ1",
+                                                "A1:MZ1",
+                                                "A1:ZZ1",
+                                                "A1:AZZ1",
+                                                "A1:BZZ1",
+                                                "A1:CZZ1",
+                                                "A1:DZZ1",
+                                                "A1:MZZ1",
+                                                "A1:ZZZ1"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "filter",
+                                        "type": "filter",
+                                        "label": "Filter",
+                                        "options": "rpc://google-sheets/2/rpcGetFilterKeys?includesHeaders=true"
+                                    },
+                                    {
+                                        "name": "orderBy",
+                                        "type": "select",
+                                        "label": "Order by"
+                                    },
+                                    {
+                                        "name": "sortOrder",
+                                        "type": "select",
+                                        "label": "Sort order",
+                                        "validate": {
+                                            "enum": [
+                                                "asc",
+                                                "desc"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "__IMTLENGTH__",
+                                        "type": "uinteger",
+                                        "label": "Total number of bundles"
+                                    },
+                                    {
+                                        "name": "__IMTINDEX__",
+                                        "type": "uinteger",
+                                        "label": "Bundle order position"
+                                    },
+                                    {
+                                        "name": "__ROW_NUMBER__",
+                                        "type": "number",
+                                        "label": "Row number"
+                                    },
+                                    {
+                                        "name": "__SPREADSHEET_ID__",
+                                        "type": "text",
+                                        "label": "Spreadsheet ID"
+                                    },
+                                    {
+                                        "name": "__SHEET__",
+                                        "type": "text",
+                                        "label": "Sheet"
+                                    },
+                                    {
+                                        "name": "0",
+                                        "type": "text",
+                                        "label": "學年 (A)"
+                                    },
+                                    {
+                                        "name": "1",
+                                        "type": "text",
+                                        "label": "選別 (B)"
+                                    },
+                                    {
+                                        "name": "2",
+                                        "type": "text",
+                                        "label": "科目 (C)"
+                                    },
+                                    {
+                                        "name": "3",
+                                        "type": "text",
+                                        "label": "上學期_學分 (D)"
+                                    },
+                                    {
+                                        "name": "4",
+                                        "type": "text",
+                                        "label": "上學期_成績 (E)"
+                                    },
+                                    {
+                                        "name": "5",
+                                        "type": "text",
+                                        "label": "下學期_學分 (F)"
+                                    },
+                                    {
+                                        "name": "6",
+                                        "type": "text",
+                                        "label": "下學期_成績 (G)"
+                                    },
+                                    {
+                                        "name": "7",
+                                        "type": "text",
+                                        "label": "(H)"
+                                    },
+                                    {
+                                        "name": "8",
+                                        "type": "text",
+                                        "label": "(I)"
+                                    },
+                                    {
+                                        "name": "9",
+                                        "type": "text",
+                                        "label": "(J)"
+                                    },
+                                    {
+                                        "name": "10",
+                                        "type": "text",
+                                        "label": "(K)"
+                                    },
+                                    {
+                                        "name": "11",
+                                        "type": "text",
+                                        "label": "(L)"
+                                    },
+                                    {
+                                        "name": "12",
+                                        "type": "text",
+                                        "label": "(M)"
+                                    },
+                                    {
+                                        "name": "13",
+                                        "type": "text",
+                                        "label": "(N)"
+                                    },
+                                    {
+                                        "name": "14",
+                                        "type": "text",
+                                        "label": "(O)"
+                                    },
+                                    {
+                                        "name": "15",
+                                        "type": "text",
+                                        "label": "(P)"
+                                    },
+                                    {
+                                        "name": "16",
+                                        "type": "text",
+                                        "label": "(Q)"
+                                    },
+                                    {
+                                        "name": "17",
+                                        "type": "text",
+                                        "label": "(R)"
+                                    },
+                                    {
+                                        "name": "18",
+                                        "type": "text",
+                                        "label": "(S)"
+                                    },
+                                    {
+                                        "name": "19",
+                                        "type": "text",
+                                        "label": "(T)"
+                                    },
+                                    {
+                                        "name": "20",
+                                        "type": "text",
+                                        "label": "(U)"
+                                    },
+                                    {
+                                        "name": "21",
+                                        "type": "text",
+                                        "label": "(V)"
+                                    },
+                                    {
+                                        "name": "22",
+                                        "type": "text",
+                                        "label": "(W)"
+                                    },
+                                    {
+                                        "name": "23",
+                                        "type": "text",
+                                        "label": "(X)"
+                                    },
+                                    {
+                                        "name": "24",
+                                        "type": "text",
+                                        "label": "(Y)"
+                                    },
+                                    {
+                                        "name": "25",
+                                        "type": "text",
+                                        "label": "(Z)"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 17,
+                            "module": "util:SetVariable2",
+                            "version": 1,
+                            "parameters": {},
+                            "mapper": {
+                                "name": "first_semester_grade",
+                                "scope": "roundtrip",
+                                "value": "{{ifempty(15.`4`; \"未修（無成績）\"; 15.`4`)}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1500,
+                                    "y": 300
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "scope": {
+                                            "label": "One cycle"
+                                        }
+                                    }
+                                },
+                                "expect": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Variable name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "scope",
+                                        "type": "select",
+                                        "label": "Variable lifetime",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "roundtrip",
+                                                "execution"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "value",
+                                        "type": "any",
+                                        "label": "Variable value"
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "first_semester_grade",
+                                        "type": "any",
+                                        "label": "first_semester_grade"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 18,
+                            "module": "util:SetVariable2",
+                            "version": 1,
+                            "parameters": {},
+                            "mapper": {
+                                "name": "second_semester_grade",
+                                "scope": "roundtrip",
+                                "value": "{{ifempty(15.`6`; \"未修（無成績）\"; 15.`6`)}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1800,
+                                    "y": 300
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "scope": {
+                                            "label": "One cycle"
+                                        }
+                                    }
+                                },
+                                "expect": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Variable name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "scope",
+                                        "type": "select",
+                                        "label": "Variable lifetime",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "roundtrip",
+                                                "execution"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "value",
+                                        "type": "any",
+                                        "label": "Variable value"
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "second_semester_grade",
+                                        "type": "any",
+                                        "label": "second_semester_grade"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 19,
+                            "module": "scenario-service:ReturnData",
+                            "version": 2,
+                            "parameters": {},
+                            "mapper": {
+                                "Res": "學年:{{15.`0`}}\n科目:{{15.`2`}}\n上學期成績:{{17.first_semester_grade}}\n下學期成績：{{18.second_semester_grade}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 2100,
+                                    "y": 300
+                                },
+                                "restore": {},
+                                "expect": [
+                                    {
+                                        "name": "Res",
+                                        "type": "text",
+                                        "label": ""
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "us2.make.com",
+        "notes": []
+    },
+    "io": {
+        "input_spec": [
+            {
+                "help": "",
+                "name": "Student_ID",
+                "type": "text",
+                "label": "",
+                "default": "",
+                "required": false,
+                "multiline": false
+            },
+            {
+                "help": "",
+                "name": "User_question",
+                "type": "text",
+                "label": "",
+                "default": "",
+                "required": false,
+                "multiline": false
+            }
+        ],
+        "output_spec": [
+            {
+                "help": "",
+                "name": "Res",
+                "type": "text",
+                "label": "",
+                "default": "",
+                "required": false,
+                "multiline": false
+            }
+        ]
+    }
+}

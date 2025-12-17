@@ -1,0 +1,485 @@
+{
+    "name": "timetable",
+    "flow": [
+        {
+            "id": 5,
+            "module": "google-drive:searchForFilesFolders",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": xxxxxx
+            },
+            "mapper": {
+                "limit": "1",
+                "query": "{{var.input.studentID}}",
+                "select": "list",
+                "folderId": null,
+                "retrieve": "folder",
+                "searchType": "fulltext",
+                "destination": "drive"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "Select from the list"
+                        },
+                        "folderId": {
+                            "mode": "chose",
+                            "path": []
+                        },
+                        "retrieve": {
+                            "label": "Folders"
+                        },
+                        "searchType": {
+                            "label": "Fulltext search"
+                        },
+                        "destination": {
+                            "label": "My Drive"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-restricted"
+                            },
+                            "label": "My Google Drive (axxxxxxxxx@xxxxxxx)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-restricted",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "type": "hidden"
+                    },
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Select the Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "map",
+                                "list"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "retrieve",
+                        "type": "select",
+                        "label": "Retrieve",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "file",
+                                "folder",
+                                "file_folder"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "searchType",
+                        "type": "select",
+                        "label": "Search",
+                        "validate": {
+                            "enum": [
+                                "title",
+                                "fulltext",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    },
+                    {
+                        "name": "destination",
+                        "type": "select",
+                        "label": "Choose a Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folderId",
+                        "type": "folder",
+                        "label": "Choose a Folder"
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 6,
+            "module": "google-drive:searchForFilesFolders",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": xxxxxxx
+            },
+            "mapper": {
+                "limit": "1",
+                "query": "timetable_list2",
+                "select": "list",
+                "folderId": "/{{5.id}}",
+                "operator": "contains",
+                "retrieve": "file",
+                "searchType": "title",
+                "destination": "drive"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "Select from the list"
+                        },
+                        "folderId": {
+                            "mode": "edit",
+                            "path": []
+                        },
+                        "operator": {
+                            "label": "Search for name containing the search term"
+                        },
+                        "retrieve": {
+                            "label": "Files"
+                        },
+                        "searchType": {
+                            "label": "Search within file/folder names"
+                        },
+                        "destination": {
+                            "label": "My Drive"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-restricted"
+                            },
+                            "label": "My Google Drive (axxxxxxxxx@xxxxxxx)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-restricted",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "type": "hidden"
+                    },
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Select the Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "map",
+                                "list"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "retrieve",
+                        "type": "select",
+                        "label": "Retrieve",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "file",
+                                "folder",
+                                "file_folder"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "searchType",
+                        "type": "select",
+                        "label": "Search",
+                        "validate": {
+                            "enum": [
+                                "title",
+                                "fulltext",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    },
+                    {
+                        "name": "destination",
+                        "type": "select",
+                        "label": "Choose a Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folderId",
+                        "type": "folder",
+                        "label": "Choose a Folder"
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    },
+                    {
+                        "name": "operator",
+                        "type": "select",
+                        "label": "Search options",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "=",
+                                "contains"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": 32,
+            "module": "cloudinary:UploadResource",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": xxxxxx
+            },
+            "mapper": {
+                "file": "{{6.webContentLink}}",
+                "type": "upload",
+                "file_type": "url",
+                "resourceType": "image"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0
+                },
+                "restore": {
+                    "expect": {
+                        "type": {
+                            "mode": "chose",
+                            "label": "Upload"
+                        },
+                        "folder": {
+                            "mode": "chose"
+                        },
+                        "file_type": {
+                            "label": "URL Where The File Stored"
+                        },
+                        "resourceType": {
+                            "mode": "chose",
+                            "label": "image"
+                        },
+                        "use_filename": {
+                            "mode": "chose"
+                        },
+                        "upload_preset": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "cloudinary"
+                            },
+                            "label": "My Cloudinary connection (ddkhbhc7q)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:cloudinary",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "file_type",
+                        "type": "select",
+                        "label": "File Type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "data",
+                                "url"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "resourceType",
+                        "type": "select",
+                        "label": "Resource Type",
+                        "required": true
+                    },
+                    {
+                        "name": "upload_preset",
+                        "type": "select",
+                        "label": "Upload Preset"
+                    },
+                    {
+                        "name": "public_id",
+                        "type": "text",
+                        "label": "Public ID"
+                    },
+                    {
+                        "name": "folder",
+                        "type": "select",
+                        "label": "Folder"
+                    },
+                    {
+                        "name": "use_filename",
+                        "type": "boolean",
+                        "label": "Use Filename"
+                    },
+                    {
+                        "name": "type",
+                        "type": "select",
+                        "label": "Type",
+                        "validate": {
+                            "enum": [
+                                "private",
+                                "upload",
+                                "authenticated"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "file",
+                        "type": "url",
+                        "label": "File",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 13,
+            "module": "scenario-service:ReturnData",
+            "version": 2,
+            "parameters": {},
+            "mapper": {
+                "ContentURL": "{{32.secure_url}}",
+                "PreviewURL": "{{32.secure_url}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 900,
+                    "y": 0
+                },
+                "restore": {},
+                "expect": [
+                    {
+                        "name": "PreviewURL",
+                        "type": "text",
+                        "label": ""
+                    },
+                    {
+                        "name": "ContentURL",
+                        "type": "text",
+                        "label": ""
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "us2.make.com",
+        "notes": []
+    },
+    "io": {
+        "input_spec": [
+            {
+                "help": "",
+                "name": "studentID",
+                "type": "text",
+                "label": "",
+                "default": "",
+                "required": false,
+                "multiline": false
+            }
+        ],
+        "output_spec": [
+            {
+                "help": "",
+                "name": "PreviewURL",
+                "type": "text",
+                "label": "",
+                "default": "",
+                "required": false,
+                "multiline": false
+            },
+            {
+                "help": "",
+                "name": "ContentURL",
+                "type": "text",
+                "label": "",
+                "default": "",
+                "required": false,
+                "multiline": false
+            }
+        ]
+    }
+}

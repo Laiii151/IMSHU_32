@@ -1,0 +1,907 @@
+{
+    "name": "ranking",
+    "flow": [
+        {
+            "id": 9,
+            "module": "regexp:Parser",
+            "version": 1,
+            "parameters": {
+                "global": false,
+                "pattern": "^(\\d{3})\\s*(\\d+)\\s*(.+)$",
+                "multiline": false,
+                "sensitive": false,
+                "singleline": false,
+                "continueWhenNoRes": false
+            },
+            "mapper": {
+                "text": "{{var.input.User_question}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 300
+                },
+                "restore": {},
+                "parameters": [
+                    {
+                        "name": "pattern",
+                        "type": "text",
+                        "label": "Pattern",
+                        "required": true
+                    },
+                    {
+                        "name": "global",
+                        "type": "boolean",
+                        "label": "Global match",
+                        "required": true
+                    },
+                    {
+                        "name": "sensitive",
+                        "type": "boolean",
+                        "label": "Case sensitive",
+                        "required": true
+                    },
+                    {
+                        "name": "multiline",
+                        "type": "boolean",
+                        "label": "Multiline",
+                        "required": true
+                    },
+                    {
+                        "name": "singleline",
+                        "type": "boolean",
+                        "label": "Singleline",
+                        "required": true
+                    },
+                    {
+                        "name": "continueWhenNoRes",
+                        "type": "boolean",
+                        "label": "Continue the execution of the route even if the module finds no matches",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "text",
+                        "type": "text",
+                        "label": "Text"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "$1",
+                        "type": "text",
+                        "label": "$1"
+                    },
+                    {
+                        "name": "$2",
+                        "type": "text",
+                        "label": "$2"
+                    },
+                    {
+                        "name": "$3",
+                        "type": "text",
+                        "label": "$3"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "module": "google-drive:searchForFilesFolders",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": xxxxx
+            },
+            "mapper": {
+                "limit": "10",
+                "query": "{{var.input.Student_ID}}",
+                "select": "list",
+                "folderId": null,
+                "retrieve": "folder",
+                "searchType": "fulltext",
+                "destination": "drive"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 300
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "Select from the list"
+                        },
+                        "folderId": {
+                            "mode": "chose",
+                            "path": []
+                        },
+                        "retrieve": {
+                            "label": "Folders"
+                        },
+                        "searchType": {
+                            "label": "Fulltext search"
+                        },
+                        "destination": {
+                            "label": "My Drive"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-restricted"
+                            },
+                            "label": "My Google Drive (xxxxx@mxxxxxx)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-restricted",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "type": "hidden"
+                    },
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Select the Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "map",
+                                "list"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "retrieve",
+                        "type": "select",
+                        "label": "Retrieve",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "file",
+                                "folder",
+                                "file_folder"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "searchType",
+                        "type": "select",
+                        "label": "Search",
+                        "validate": {
+                            "enum": [
+                                "title",
+                                "fulltext",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    },
+                    {
+                        "name": "destination",
+                        "type": "select",
+                        "label": "Choose a Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folderId",
+                        "type": "folder",
+                        "label": "Choose a Folder"
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 6,
+            "module": "google-drive:searchForFilesFolders",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__":xxxxx
+            },
+            "mapper": {
+                "limit": "10",
+                "query": "ranking",
+                "select": "list",
+                "folderId": "{{5.id}}",
+                "operator": "contains",
+                "retrieve": "file",
+                "searchType": "title",
+                "destination": "drive"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 300
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "Select from the list"
+                        },
+                        "folderId": {
+                            "mode": "edit",
+                            "path": []
+                        },
+                        "operator": {
+                            "label": "Search for name containing the search term"
+                        },
+                        "retrieve": {
+                            "label": "Files"
+                        },
+                        "searchType": {
+                            "label": "Search within file/folder names"
+                        },
+                        "destination": {
+                            "label": "My Drive"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-restricted"
+                            },
+                            "label": "My Google Drive (xxxxxx@xxxxxxx)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-restricted",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "type": "hidden"
+                    },
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Select the Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "map",
+                                "list"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "retrieve",
+                        "type": "select",
+                        "label": "Retrieve",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "file",
+                                "folder",
+                                "file_folder"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "searchType",
+                        "type": "select",
+                        "label": "Search",
+                        "validate": {
+                            "enum": [
+                                "title",
+                                "fulltext",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    },
+                    {
+                        "name": "destination",
+                        "type": "select",
+                        "label": "Choose a Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folderId",
+                        "type": "folder",
+                        "label": "Choose a Folder"
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    },
+                    {
+                        "name": "operator",
+                        "type": "select",
+                        "label": "Search options",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "=",
+                                "contains"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": 7,
+            "module": "google-sheets:filterRows",
+            "version": 2,
+            "parameters": {
+                "__IMTCONN__": xxxxxxx
+            },
+            "mapper": {
+                "from": "drive",
+                "filter": [
+                    [
+                        {
+                            "a": "A",
+                            "b": "{{9.`$1`}}",
+                            "o": "text:equal"
+                        },
+                        {
+                            "a": "B",
+                            "b": "{{9.`$2`}}",
+                            "o": "text:equal"
+                        }
+                    ]
+                ],
+                "sheetId": "{{6.name}}",
+                "sortOrder": "asc",
+                "spreadsheetId": "{{6.id}}",
+                "tableFirstRow": "A1:Z1",
+                "includesHeaders": true,
+                "valueRenderOption": "FORMATTED_VALUE",
+                "dateTimeRenderOption": "FORMATTED_STRING"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 900,
+                    "y": 300
+                },
+                "restore": {
+                    "expect": {
+                        "from": {
+                            "label": "Select from My Drive"
+                        },
+                        "orderBy": {
+                            "mode": "chose"
+                        },
+                        "sortOrder": {
+                            "mode": "chose",
+                            "label": "Ascending"
+                        },
+                        "spreadsheetId": {
+                            "mode": "edit"
+                        },
+                        "tableFirstRow": {
+                            "label": "A-Z"
+                        },
+                        "includesHeaders": {
+                            "mode": "chose",
+                            "label": "Yes"
+                        },
+                        "valueRenderOption": {
+                            "mode": "chose",
+                            "label": "Formatted value"
+                        },
+                        "dateTimeRenderOption": {
+                            "mode": "chose",
+                            "label": "Formatted string"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            },
+                            "label": "Google connection (xxxxxx2@xxxxxx)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "from",
+                        "type": "select",
+                        "label": "Search Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "valueRenderOption",
+                        "type": "select",
+                        "label": "Value render option",
+                        "validate": {
+                            "enum": [
+                                "FORMATTED_VALUE",
+                                "UNFORMATTED_VALUE",
+                                "FORMULA"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "dateTimeRenderOption",
+                        "type": "select",
+                        "label": "Date and time render option",
+                        "validate": {
+                            "enum": [
+                                "SERIAL_NUMBER",
+                                "FORMATTED_STRING"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    },
+                    {
+                        "name": "spreadsheetId",
+                        "type": "select",
+                        "label": "Spreadsheet ID",
+                        "required": true
+                    },
+                    {
+                        "name": "sheetId",
+                        "type": "any",
+                        "label": "Sheet Name",
+                        "required": true
+                    },
+                    {
+                        "name": "includesHeaders",
+                        "type": "select",
+                        "label": "Table contains headers",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                true,
+                                false
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tableFirstRow",
+                        "type": "select",
+                        "label": "Column range",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "A1:Z1",
+                                "A1:BZ1",
+                                "A1:CZ1",
+                                "A1:DZ1",
+                                "A1:MZ1",
+                                "A1:ZZ1",
+                                "A1:AZZ1",
+                                "A1:BZZ1",
+                                "A1:CZZ1",
+                                "A1:DZZ1",
+                                "A1:MZZ1",
+                                "A1:ZZZ1"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "filter",
+                        "type": "filter",
+                        "label": "Filter",
+                        "options": "rpc://google-sheets/2/rpcGetFilterKeys?includesHeaders=true"
+                    },
+                    {
+                        "name": "orderBy",
+                        "type": "select",
+                        "label": "Order by"
+                    },
+                    {
+                        "name": "sortOrder",
+                        "type": "select",
+                        "label": "Sort order",
+                        "validate": {
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "__IMTLENGTH__",
+                        "type": "uinteger",
+                        "label": "Total number of bundles"
+                    },
+                    {
+                        "name": "__IMTINDEX__",
+                        "type": "uinteger",
+                        "label": "Bundle order position"
+                    },
+                    {
+                        "name": "__ROW_NUMBER__",
+                        "type": "number",
+                        "label": "Row number"
+                    },
+                    {
+                        "name": "__SPREADSHEET_ID__",
+                        "type": "text",
+                        "label": "Spreadsheet ID"
+                    },
+                    {
+                        "name": "__SHEET__",
+                        "type": "text",
+                        "label": "Sheet"
+                    },
+                    {
+                        "name": "0",
+                        "type": "text",
+                        "label": "學年 (A)"
+                    },
+                    {
+                        "name": "1",
+                        "type": "text",
+                        "label": "學期 (B)"
+                    },
+                    {
+                        "name": "2",
+                        "type": "text",
+                        "label": "學分 (C)"
+                    },
+                    {
+                        "name": "3",
+                        "type": "text",
+                        "label": "平均 (D)"
+                    },
+                    {
+                        "name": "4",
+                        "type": "text",
+                        "label": "名次 (E)"
+                    },
+                    {
+                        "name": "5",
+                        "type": "text",
+                        "label": "人數 (F)"
+                    },
+                    {
+                        "name": "6",
+                        "type": "text",
+                        "label": "名次_班 (G)"
+                    },
+                    {
+                        "name": "7",
+                        "type": "text",
+                        "label": "名次_組 (H)"
+                    },
+                    {
+                        "name": "8",
+                        "type": "text",
+                        "label": "名次_系 (I)"
+                    },
+                    {
+                        "name": "9",
+                        "type": "text",
+                        "label": "人數_班 (J)"
+                    },
+                    {
+                        "name": "10",
+                        "type": "text",
+                        "label": "人數_組 (K)"
+                    },
+                    {
+                        "name": "11",
+                        "type": "text",
+                        "label": "人數_系 (L)"
+                    },
+                    {
+                        "name": "12",
+                        "type": "text",
+                        "label": "(M)"
+                    },
+                    {
+                        "name": "13",
+                        "type": "text",
+                        "label": "(N)"
+                    },
+                    {
+                        "name": "14",
+                        "type": "text",
+                        "label": "(O)"
+                    },
+                    {
+                        "name": "15",
+                        "type": "text",
+                        "label": "(P)"
+                    },
+                    {
+                        "name": "16",
+                        "type": "text",
+                        "label": "(Q)"
+                    },
+                    {
+                        "name": "17",
+                        "type": "text",
+                        "label": "(R)"
+                    },
+                    {
+                        "name": "18",
+                        "type": "text",
+                        "label": "(S)"
+                    },
+                    {
+                        "name": "19",
+                        "type": "text",
+                        "label": "(T)"
+                    },
+                    {
+                        "name": "20",
+                        "type": "text",
+                        "label": "(U)"
+                    },
+                    {
+                        "name": "21",
+                        "type": "text",
+                        "label": "(V)"
+                    },
+                    {
+                        "name": "22",
+                        "type": "text",
+                        "label": "(W)"
+                    },
+                    {
+                        "name": "23",
+                        "type": "text",
+                        "label": "(X)"
+                    },
+                    {
+                        "name": "24",
+                        "type": "text",
+                        "label": "(Y)"
+                    },
+                    {
+                        "name": "25",
+                        "type": "text",
+                        "label": "(Z)"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 28,
+            "module": "builtin:BasicRouter",
+            "version": 1,
+            "mapper": null,
+            "metadata": {
+                "designer": {
+                    "x": 1200,
+                    "y": 300
+                }
+            },
+            "routes": [
+                {
+                    "flow": [
+                        {
+                            "id": 13,
+                            "module": "scenario-service:ReturnData",
+                            "version": 2,
+                            "parameters": {},
+                            "filter": {
+                                "name": "班排",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{9.`$3`}}",
+                                            "b": "班",
+                                            "o": "text:contain:ci"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "Res": "班排為{{7.`6`}}/{{7.`9`}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1500,
+                                    "y": 0
+                                },
+                                "restore": {},
+                                "expect": [
+                                    {
+                                        "name": "Res",
+                                        "type": "text",
+                                        "label": ""
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 27,
+                            "module": "scenario-service:ReturnData",
+                            "version": 2,
+                            "parameters": {},
+                            "filter": {
+                                "name": "組排",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{9.`$3`}}",
+                                            "b": "組",
+                                            "o": "text:contain:ci"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "Res": "組排為{{7.`7`}}/{{7.`10`}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1500,
+                                    "y": 300
+                                },
+                                "restore": {},
+                                "expect": [
+                                    {
+                                        "name": "Res",
+                                        "type": "text",
+                                        "label": ""
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 29,
+                            "module": "scenario-service:ReturnData",
+                            "version": 2,
+                            "parameters": {},
+                            "filter": {
+                                "name": "系排",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{9.`$3`}}",
+                                            "b": "系",
+                                            "o": "text:contain:ci"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "Res": "系排為{{7.`8`}}/{{7.`11`}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1500,
+                                    "y": 600
+                                },
+                                "restore": {},
+                                "expect": [
+                                    {
+                                        "name": "Res",
+                                        "type": "text",
+                                        "label": ""
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "us2.make.com",
+        "notes": []
+    },
+    "io": {
+        "input_spec": [
+            {
+                "help": "",
+                "name": "Student_ID",
+                "type": "text",
+                "label": "",
+                "default": "",
+                "required": false,
+                "multiline": false
+            },
+            {
+                "help": "",
+                "name": "User_question",
+                "type": "text",
+                "label": "",
+                "default": "",
+                "required": false,
+                "multiline": false
+            }
+        ],
+        "output_spec": [
+            {
+                "help": "",
+                "name": "Res",
+                "type": "text",
+                "label": "",
+                "default": "",
+                "required": false,
+                "multiline": false
+            }
+        ]
+    }
+}
